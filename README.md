@@ -86,11 +86,6 @@ La aplicación estará disponible en `http://localhost:3000`
 
 [Edit in StackBlitz next generation editor ⚡️](https://stackblitz.com/~/github.com/GabrieJimenez876/React-GabrielExamen)
 
-## Repositorio de Examen
-
-En este repositorio encontrarás el código fuente y los recursos utilizados en el curso de Programación en Internet - Frontend. El curso abarca temas fundamentales para el desarrollo web, incluyendo HTML, CSS, JavaScript y frameworks populares.
-
-[Edit in StackBlitz next generation editor ⚡️](https://stackblitz.com/~/github.com/csullaez/programacion-internet-frontend)
 
 # Instalacion
 Para levantar el proyecto localmente, sigue estos pasos:
