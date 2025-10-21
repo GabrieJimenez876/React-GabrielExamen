@@ -1,6 +1,5 @@
 import React from 'react';
-import DataTable from "./DataTable"; // Importamos el componente de tabla
-
+import DataTable from "./components/DataTable";
 const App: React.FC = () => {
   return (
     <div className="min-h-screen bg-gray-50 p-6 sm:p-10">
@@ -16,9 +15,6 @@ const App: React.FC = () => {
       <section className="bg-white p-6 rounded-2xl shadow-xl">
         <DataTable />
       </section>
-
-      {/* Nota importante: El componente ButtonCounter de tu ejemplo no es necesario aquí */}
-      {/* Ya que solo renderiza un botón contador que no interactúa con la tabla. */}
     </div>
   );
 };
