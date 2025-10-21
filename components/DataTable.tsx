@@ -1,26 +1,19 @@
 import React, { useState, useMemo } from 'react';
-import { Tarea, datosTareas } from './data';
+import { datosTareas, clasesColor } from '../data';
 
 interface EstadoPillProps {
-  estado: string;
-  color: string;
+    etiqueta: string;
+    color: keyof typeof clasesColor;
 }
 
-const clasesColor = {
-  'Completado': { punto: "bg-green-500", borde: "border-green-300", texto: "text-green-800", fondo: "bg-green-100" },
-  'En Progreso': { punto: "bg-blue-500", borde: "border-blue-300", texto: "text-blue-800", fondo: "bg-blue-100" },
-  'Pendiente': { punto: "bg-red-500", borde: "border-red-300", texto: "text-red-800", fondo: "bg-red-100" },
-  'En Revisión': { punto: "bg-yellow-500", borde: "border-yellow-300", texto: "text-yellow-800", fondo: "bg-yellow-100" }
-};
-
-const EstadoPill: React.FC<EstadoPillProps> = ({ estado }) => {
-  const c = clasesColor[estado] || clasesColor['Pendiente'];
-  return (
-    <span className={`inline-flex items-center gap-2 px-3 py-1 rounded-full text-xs font-semibold border ${c.borde} ${c.texto} ${c.fondo}`}>
-      <span className={`w-2.5 h-2.5 rounded-full ${c.punto} shadow-sm`}></span>
-      {estado}
-    </span>
-  );
+const EstadoPill: React.FC<EstadoPillProps> = ({ etiqueta, color }) => {
+    const c = clasesColor[color];
+    return (
+        <span className={`inline-flex items-center gap-2 px-3 py-1 rounded-full text-xs font-semibold border ${c.borde} ${c.texto} ${c.fondo}`}>
+            <span className={`w-2.5 h-2.5 rounded-full ${c.punto} shadow-sm`}></span>
+            {etiqueta}
+        </span>
+    );
 };
 
 const DataTable: React.FC = () => {
@@ -31,9 +24,9 @@ const DataTable: React.FC = () => {
   const columnas = [
     { key: "empleado", encabezado: "Empleado" },
     { key: "idTarea", encabezado: "ID Tarea" },
-    { key: "detalle", encabezado: "Detalles de Tarea" },
-    { key: "fechaInicio", encabezado: "Fecha Inicio" },
-    { key: "fechaFin", encabezado: "Fecha Fin" },
+    { key: "tarea", encabezado: "Detalles de Tarea" },
+    { key: "inicio", encabezado: "Fecha Inicio" },
+    { key: "fin", encabezado: "Fecha Fin" },
     { key: "conteo", encabezado: "Conteo", alineacion: "center" },
     { key: "estado", encabezado: "Estado" },
   ];
@@ -122,19 +115,19 @@ const DataTable: React.FC = () => {
                   <div className="text-sm text-gray-900">{fila.idTarea}</div>
                 </td>
                 <td className="px-6 py-4 whitespace-nowrap">
-                  <div className="text-sm text-gray-900">{fila.detalle}</div>
+                  <div className="text-sm text-gray-900">{fila.tarea}</div>
                 </td>
                 <td className="px-6 py-4 whitespace-nowrap">
-                  <div className="text-sm text-gray-900">{fila.fechaInicio}</div>
+                  <div className="text-sm text-gray-900">{fila.inicio}</div>
                 </td>
                 <td className="px-6 py-4 whitespace-nowrap">
-                  <div className="text-sm text-gray-900">{fila.fechaFin}</div>
+                  <div className="text-sm text-gray-900">{fila.fin}</div>
                 </td>
                 <td className="px-6 py-4 whitespace-nowrap text-center">
                   <div className="text-sm text-gray-900">{fila.conteo}</div>
                 </td>
                 <td className="px-6 py-4 whitespace-nowrap">
-                  <EstadoPill estado={fila.estado} />
+                  <EstadoPill etiqueta={fila.estado} color={fila.colorEstado} />
                 </td>
                 <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
                   <button
