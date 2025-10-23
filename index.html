@@ -3,13 +3,13 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Bandeja de Tareas con React</title>
+    <title>Bandeja de Personajes Rick y Morty (20 Personajes)</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Inter:wght@100..900&display=swap');
         body {
             font-family: 'Inter', sans-serif;
-            background-color: #a4a5a7;
+            background-color: #7c7979;
         }
     </style>
     
@@ -21,96 +21,123 @@
     <div id="root"></div>
 
     <script type="text/babel">
-        const { useState, useMemo } = React;
+        const { useState, useMemo, useEffect } = React;
         const { createRoot } = ReactDOM;
-        const datosTareas = [
-            { empleado: "John, Wick", idTarea: "TID0002501", tarea: "Desarrollo Frontend", inicio: "12/09/2018", fin: "15/09/2018", conteo: 10, estado: "Completado", colorEstado: "verde" },
-            { empleado: "Nattali Fernandez", idTarea: "TID0002498", tarea: "Desarrollo Tema RWD", inicio: "28/08/2018", fin: "05/09/2018", conteo: 9, estado: "Completado", colorEstado: "verde" },
-            { empleado: "Jennifer Killer", idTarea: "TID0002497", tarea: "Desarrollo Frontend", inicio: "28/08/2018", fin: "05/09/2018", conteo: 7, estado: "En Progreso", colorEstado: "azul" },
-            { empleado: "Jason Statham", idTarea: "TID0002486", tarea: "Desarrollo Tema RWD", inicio: "20/08/2018", fin: "28/08/2018", conteo: 9, estado: "Completado", colorEstado: "verde" },
-            { empleado: "Selena Gomez", idTarea: "TID0002481", tarea: "Tema Wordpress", inicio: "15/08/2018", fin: "26/08/2018", conteo: 6, estado: "Pendiente", colorEstado: "rojo" },
-            { empleado: "Chris Evans", idTarea: "TID0002502", tarea: "Refactorización de CSS", inicio: "01/10/2025", fin: "05/10/2025", conteo: 5, estado: "En Revisión", colorEstado: "amarillo" },
-            { empleado: "Emma Stone", idTarea: "TID0002503", tarea: "Documentación API", inicio: "10/10/2025", fin: "15/10/2025", conteo: 8, estado: "Completado", colorEstado: "verde" },
-            { empleado: "Robert Downey", idTarea: "TID0002504", tarea: "Migración a Next.js", inicio: "01/11/2025", fin: "30/11/2025", conteo: 12, estado: "Pendiente", colorEstado: "rojo" },
-            { empleado: "Scarlett Joh.", idTarea: "TID0002505", tarea: "Optimización de imágenes", inicio: "05/10/2025", fin: "08/10/2025", conteo: 3, estado: "En Progreso", colorEstado: "azul" },
-            { empleado: "Tom Jerry", idTarea: "TID0002506", tarea: "Pruebas unitarias", inicio: "20/09/2025", fin: "25/09/2025", conteo: 4, estado: "Completado", colorEstado: "verde" },
-            { empleado: "Simur Skinner", idTarea: "TID0012378", tarea: "Full Stack", inicio: "20/08/2025", fin: "01/01/2026", conteo: 25, estado: "Completado", colorEstado: "gris" },
-            { empleado: "Rayo mcqueen", idTarea: "TID00318574", tarea: "Base De Datos", inicio: "14/08/2025", fin: "14/11/2025", conteo: 11, estado: "Completado", colorEstado: "verde" },
 
-        ];
-
-        const clasesColor = {
-            verde:   { punto: "bg-green-500",   borde: "border-green-300",   texto: "text-green-800", fondo: "bg-green-100" },
-            amarillo:{ punto: "bg-yellow-500",  borde: "border-yellow-300",  texto: "text-yellow-800", fondo: "bg-yellow-100" },
-            rojo:    { punto: "bg-red-500",     borde: "border-red-300",     texto: "text-red-800", fondo: "bg-red-100" },
-            azul:    { punto: "bg-blue-500",    borde: "border-blue-300",    texto: "text-blue-800", fondo: "bg-blue-100" },
-            gris:    { punto: "bg-gray-400",    borde: "border-gray-300",    texto: "text-gray-800", fondo: "bg-gray-100" },
+        // 1. Traducción y Clases de Color
+        const clasesColorEstado = {
+            Vivo:        { punto: "bg-green-500", texto: "text-green-500", borde: "border-green-300", fondo: "bg-green-50"},
+            Muerto:      { punto: "bg-red-500", texto: "text-red-800", borde: "border-red-300", fondo: "bg-red-50"},
+            Desconocido: { punto: "bg-gray-400", texto: "text-gray-800", borde: "border-gray-300", fondo: "bg-gray-50"},
         };
 
-        const EstadoPill = ({ etiqueta, color }) => {
-            const c = clasesColor[color];
+        const traduccionEstado = {
+            Alive: "Vivo",
+            Dead: "Muerto",
+            unknown: "Desconocido",
+        };
+
+        const EstadoPill = ({ etiqueta }) => {  
+            // Usa la traducción para obtener el texto y las clases de color
+            const estadoTraducido = traduccionEstado[etiqueta] || traduccionEstado['unknown'];
+            const color = clasesColorEstado[estadoTraducido] || clasesColorEstado['Desconocido']; 
+            
             return (
-                <span className={`inline-flex items-center gap-2 px-3 py-1 rounded-full text-xs font-semibold border ${c.borde} ${c.texto} ${c.fondo}`}>
-                    <span className={`w-2.5 h-2.5 rounded-full ${c.punto} shadow-sm`}></span>
-                    {etiqueta}
+                <span className={`inline-flex items-center gap-2 px-3 py-1 rounded-full text-xs font-semibold border ${color.borde} ${color.texto} ${color.fondo} whitespace-nowrap`}>
+                    <span className={`w-2.5 h-2.5 rounded-full ${color.punto} shadow-sm`}></span>
+                    {estadoTraducido} {/* Muestra el estado traducido */}
                 </span>
             );
         };
+        
+        // 2. Nuevos manejadores de acción
+        const handleVer = (id) => {
+            alert(`Ver detalles del personaje con ID: ${id}`);
+        };
+
+        const handleEditar = (id) => {
+            alert(`Editar personaje con ID: ${id}`);
+        };
+
+        const handleEliminar = (id) => {
+            if (window.confirm(`¿Estás seguro de que quieres eliminar al personaje con ID: ${id}? Esta acción es solo de prueba.`)) {
+                alert(`Personaje con ID: ${id} eliminado (simulado)`);
+            }
+        };
+
 
         const DataTable = () => {
+            const [personajes, setPersonajes] = useState([]);
             const [busqueda, setBusqueda] = useState("");
-            const [pagina, setPagina] = useState(1);
-            const porPagina = 5;
+            const [cargando, setCargando] = useState(true);
+            const [error, setError] = useState(null);
 
+            // Columnas de la tabla (sin cambios en las keys, solo en los encabezados)
             const columnas = [
-                { key: "empleado", encabezado: "Empleado" },
-                { key: "idTarea", encabezado: "ID Tarea" },
-                { key: "tarea", encabezado: "Detalles de Tarea" },
-                { key: "inicio", encabezado: "Fecha Inicio" },
-                { key: "fin", encabezado: "Fecha Fin" },
-                { key: "conteo", encabezado: "Conteo", alineacion: "center" },
-                { key: "estado", encabezado: "Estado" },
+                { key: "personaje", encabezado: "Personaje" },
+                { key: "species", encabezado: "Especie" },
+                { key: "gender", encabezado: "Género" },
+                { key: "origin", encabezado: "Origen" },
+                { key: "location", encabezado: "Ubicación" },
+                { key: "status", encabezado: "Estado", alineacion: "center" },
             ];
+            
+            useEffect(() => {
+                const cargarPersonajes = async () => {
+                    try {
+                        // Cargar los primeros 20 personajes (página 1 y página 2)
+                        const urlPagina1 = "https://rickandmortyapi.com/api/character?page=1";
+                        const urlPagina2 = "https://rickandmortyapi.com/api/character?page=2";
 
+                        const [respuesta1, respuesta2] = await Promise.all([
+                            fetch(urlPagina1),
+                            fetch(urlPagina2)
+                        ]);
+
+                        if (!respuesta1.ok || !respuesta2.ok) {
+                            throw new Error("Error al cargar una o ambas páginas.");
+                        }
+                        
+                        const datos1 = await respuesta1.json();
+                        const datos2 = await respuesta2.json();
+
+                        // Unir los resultados de ambas páginas (20 + 20 = 40, pero solo queremos 20)
+                        const personajesCargados = [...(datos1.results || []), ...(datos2.results || [])];
+                        // Tomamos solo los primeros 20
+                        setPersonajes(personajesCargados.slice(0, 20)); 
+                    } catch (err) {
+                        console.error(err);
+                        setError("No se pudieron cargar los personajes de la API. Intenta de nuevo más tarde.");
+                    } finally {
+                        setCargando(false);
+                    }
+                };
+                cargarPersonajes();
+            }, []);
+
+            // Filtra los 20 personajes cargados
             const filtrados = useMemo(() => {
-                if (!busqueda) return datosTareas;
+                if (!busqueda) return personajes;
                 const k = busqueda.toLowerCase();
 
-                return datosTareas.filter((fila) =>
-                    Object.values(fila).some((v) => String(v).toLowerCase().includes(k))
+                return personajes.filter((p) =>
+                    p.name.toLowerCase().includes(k) ||
+                    // Se incluye la búsqueda por los nombres en inglés ya que son los datos de la API
+                    p.species.toLowerCase().includes(k) ||
+                    p.gender.toLowerCase().includes(k) ||
+                    p.origin.name.toLowerCase().includes(k) ||
+                    p.location.name.toLowerCase().includes(k)
                 );
-            }, [busqueda]);
+            }, [busqueda, personajes]);
 
-            const totalPaginas = Math.max(1, Math.ceil(filtrados.length / porPagina));
-
-            const datosPagina = useMemo(() => {
-                const inicio = (pagina - 1) * porPagina;
-                return filtrados.slice(inicio, inicio + porPagina);
-            }, [filtrados, pagina]);
-
-            const indiceInicio = Math.min(filtrados.length, (pagina - 1) * porPagina + 1);
-            const indiceFin = Math.min(pagina * porPagina, filtrados.length);
-
-
-            const handleVer = (idTarea) => {
-                console.log(`Ver detalles de la tarea: ${idTarea}`);
-                alert(`Ver detalles de ${idTarea}`);
-            };
-
-            const handleEliminar = (idTarea) => {
-                console.log(`Eliminar tarea: ${idTarea}`);
-                alert(`Eliminar tarea ${idTarea}. (En una app real, esto abriría un modal de confirmación)`);
-            };
 
             return (
                 <div className="w-full">
-
                     <div className="flex flex-col sm:flex-row items-center justify-between gap-4 mb-5">
-
                         <div className="flex items-center gap-2 text-sm">
                             <span className="inline-flex items-center gap-1 px-3 py-2 bg-sky-500 rounded-full text-white font-medium shadow-md">
-                                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2a1 1 0 01-.293.707l-6 6V16a1 1 0 01-.293.707l-3 3A1 1 0 017 19v-4.586l-6-6A1 1 0 013 6V4z"></path></svg>
-                                Tareas Activas
+                                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.828 0l-4.243-4.243m10.606-10.607l-4.243 4.243m0 0l-4.243-4.243m4.243 4.243L21 12l-4.243 4.243m-4.243-4.243l-4.243-4.243m4.243 4.243l-4.243 4.243M3 12l4.243 4.243m0 0l4.243-4.243M7.243 7.757L3 12"></path></svg>
+                                Personajes cargados: {personajes.length}
                             </span>
                         </div>
 
@@ -118,121 +145,144 @@
                             <svg className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path></svg>
                             <input
                                 className="w-full pl-10 pr-3 py-2.5 rounded-xl bg-white border border-gray-300 focus:ring-2 focus:ring-sky-500 focus:border-sky-500 outline-none text-sm shadow-sm transition"
-                                placeholder="Buscar por empleado, ID o detalle..."
+                                placeholder="Buscar por nombre, especie, ubicación..."
                                 value={busqueda}
                                 onChange={(e) => {
                                     setBusqueda(e.target.value);
-                                    setPagina(1);
                                 }}
                             />
                         </div>
                     </div>
+                    {cargando && (
+                        <div className="text-center py-10 text-gray-600 text-lg">Cargando personajes... (Obteniendo 20 de la API)</div>
+                    )}
+                    {error && (
+                        <div className="text-center py-10 text-red-600 text-lg">{error}</div>
+                    )}
+                    {!cargando && !error && (
+                        <>
+                            <div className="overflow-x-auto rounded-xl shadow-lg border border-gray-200">
+                                <table className="min-w-full divide-y divide-gray-200">
+                                    <thead className="bg-sky-700">
+                                        <tr>
+                                            {columnas.map((col) => (
+                                                <th
+                                                    key={col.key}
+                                                    className={`px-4 py-3 text-sm font-semibold text-white tracking-wider ${col.alineacion === 'center' ? 'text-center' : col.alineacion === 'right' ? 'text-right' : 'text-left'}`}
+                                                >
+                                                    {col.encabezado}
+                                                </th>
+                                            ))}
+                                            <th className="px-4 py-3 text-sm font-semibold text-white tracking-wider text-right w-[150px]">
+                                                Acción
+                                            </th>
+                                        </tr>
+                                    </thead>
+                                    <tbody className="bg-white divide-y divide-gray-100">
+                                        {filtrados.map((p) => (
+                                            <tr key={p.id} className="hover:bg-gray-50 transition-colors">
+                                                {columnas.map((col) => {
+                                                    let contenido;
+                                                    const alineacion = col.alineacion === 'center' ? 'text-center' : col.alineacion === 'right' ? 'text-right' : 'text-left';
 
-                    <div className="overflow-x-auto rounded-xl shadow-lg border border-gray-200">
-                        <table className="min-w-full divide-y divide-gray-200">
-                            <thead className="bg-sky-700">
-                                <tr>
-                                    {columnas.map((col) => (
-                                        <th
-                                            key={col.key}
-                                            className={`px-4 py-3 text-sm font-semibold text-white tracking-wider ${col.alineacion === 'center' ? 'text-center' : col.alineacion === 'right' ? 'text-right' : 'text-left'}`}
-                                        >
-                                            {col.encabezado}
-                                        </th>
-                                    ))}
-                                    <th className="px-4 py-3 text-sm font-semibold text-white tracking-wider text-right w-[150px]">
-                                        Acción
-                                    </th>
-                                </tr>
-                            </thead>
-                            <tbody className="bg-white divide-y divide-gray-100">
-                                {datosPagina.map((fila, index) => (
-                                    <tr key={index} className="hover:bg-gray-50 transition-colors">
-                                        {columnas.map((col) => (
-                                            <td
-                                                key={col.key}
-                                                className={`px-4 py-3 text-sm text-gray-700 ${col.alineacion === 'center' ? 'text-center' : col.alineacion === 'right' ? 'text-right' : 'text-left'}`}
-                                            >
-                                                {col.key === 'estado' ? (
-                                                    <EstadoPill etiqueta={fila.estado} color={fila.colorEstado} />
-                                                ) : (
-                                                    String(fila[col.key] ?? "")
-                                                )}
-                                            </td>
+                                                    if (col.key === 'personaje') {
+                                                        contenido = (
+                                                            <div className="flex items-center gap-3">
+                                                                <img
+                                                                    src={p.image}
+                                                                    alt={p.name}
+                                                                    className="w-10 h-10 object-cover rounded-full shadow-md"
+                                                                />
+                                                                <span className="font-medium text-gray-900 whitespace-nowrap">{p.name}</span>
+                                                            </div>
+                                                        );
+                                                    } else if (col.key === 'status') {
+                                                        contenido = <EstadoPill etiqueta={p.status} />;
+                                                    } else if (col.key === 'origin') {
+                                                        contenido = String(p.origin.name || "N/A");
+                                                    } else if (col.key === 'location') {
+                                                        contenido = String(p.location.name || "N/A");
+                                                    } else {
+                                                        // Traducción de otras columnas (ejemplo para Género/Especie)
+                                                        let valor = p[col.key] ?? "";
+                                                        if (col.key === 'gender') {
+                                                            valor = valor === 'Male' ? 'Masculino' : valor === 'Female' ? 'Femenino' : valor === 'unknown' ? 'Desconocido' : valor;
+                                                        } else if (col.key === 'species') {
+                                                            valor = valor === 'Human' ? 'Humano' : valor === 'Alien' ? 'Alien' : valor;
+                                                        }
+                                                        contenido = String(valor);
+                                                    }
+                                                    return (
+                                                        <td
+                                                            key={col.key}
+                                                            className={`px-4 py-3 text-sm text-gray-700 ${alineacion}`}
+                                                        >
+                                                            {contenido}
+                                                        </td>
+                                                    );
+                                                })}
+                                                <td className="px-4 py-3">
+                                                    <div className="flex justify-end gap-2">
+                                                        {/* Botón Ver */}
+                                                        <button
+                                                            onClick={() => handleVer(p.id)}
+                                                            className="text-blue-500 hover:text-blue-700 p-2 rounded-full hover:bg-blue-50 transition-colors"
+                                                            title="Ver detalles"
+                                                        >
+                                                            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"></path></svg>
+                                                        </button>
+                                                        
+                                                        {/* Botón Editar */}
+                                                        <button
+                                                            onClick={() => handleEditar(p.id)}
+                                                            className="text-yellow-500 hover:text-yellow-700 p-2 rounded-full hover:bg-yellow-50 transition-colors"
+                                                            title="Editar"
+                                                        >
+                                                            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"></path></svg>
+                                                        </button>
+
+                                                        {/* Botón Eliminar */}
+                                                        <button
+                                                            onClick={() => handleEliminar(p.id)}
+                                                            className="text-red-500 hover:text-red-700 p-2 rounded-full hover:bg-red-50 transition-colors"
+                                                            title="Eliminar"
+                                                        >
+                                                            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg>
+                                                        </button>
+                                                    </div>
+                                                </td>
+                                            </tr>
                                         ))}
+                                        {filtrados.length === 0 && (
+                                            <tr>
+                                                <td colSpan={columnas.length + 1} className="px-4 py-10 text-center text-gray-500 text-sm italic bg-white">
+                                                    No se encontraron personajes que coincidan con la búsqueda.
+                                                </td>
+                                            </tr>
+                                        )}
+                                    </tbody>
+                                </table>
+                            </div>
 
-                                        <td className="px-4 py-3">
-                                            <div className="flex justify-end gap-2">
-                                                <button
-                                                    onClick={() => handleVer(fila.idTarea)}
-                                                    className="text-blue-500 hover:text-blue-700 p-2 rounded-full hover:bg-blue-50 transition-colors"
-                                                    title="Ver detalles"
-                                                >
-                                                    <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"></path></svg>
-                                                </button>
-                                                <button
-                                                    onClick={() => handleEliminar(fila.idTarea)}
-                                                    className="text-red-500 hover:text-red-700 p-2 rounded-full hover:bg-red-50 transition-colors"
-                                                    title="Eliminar tarea"
-                                                >
-                                                    <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg>
-                                                </button>
-                                            </div>
-                                        </td>
-                                    </tr>
-                                ))}
-                                {datosPagina.length === 0 && (
-                                    <tr>
-                                        <td colSpan={columnas.length + 1} className="px-4 py-10 text-center text-gray-500 text-sm italic bg-white">
-                                            No se encontraron tareas que coincidan con la búsqueda.
-                                        </td>
-                                    </tr>
-                                )}
-                            </tbody>
-                        </table>
-                    </div>
-
-                    <div className="mt-4 flex flex-wrap items-center justify-between gap-3">
-                        <div className="text-sm text-gray-600">
-                            Datos Totales {filtrados.length}.
-                        </div>
-                        <div className="flex items-center gap-2">
-                            <button
-                                onClick={() => setPagina((p) => Math.max(1, p - 1))}
-                                className="inline-flex items-center gap-1 px-3 py-2 rounded-xl border border-gray-300 bg-white hover:bg-gray-100 disabled:opacity-50 disabled:cursor-not-allowed text-sm font-medium transition"
-                                disabled={pagina === 1}
-                            >
-                                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M15 19l-7-7 7-7"></path></svg>
-                                Anterior
-                            </button>
-
-                            <span className="text-sm font-semibold text-gray-700">
-                                Página {pagina} de {totalPaginas}
-                            </span>
-
-                            <button
-                                onClick={() => setPagina((p) => Math.min(totalPaginas, p + 1))}
-                                className="inline-flex items-center gap-1 px-3 py-2 rounded-xl border border-gray-300 bg-white hover:bg-gray-100 disabled:opacity-50 disabled:cursor-not-allowed text-sm font-medium transition"
-                                disabled={pagina === totalPaginas || totalPaginas === 0}
-                            >
-                                Siguiente
-                                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 5l7 7-7 7"></path></svg>
-                            </button>
-                        </div>
-                    </div>
+                            <div className="mt-4 flex flex-wrap items-center justify-between gap-3">
+                                <div className="text-sm text-gray-600">
+                                    Mostrando {filtrados.length} personajes.
+                                </div>
+                            </div>
+                        </>
+                    )}
                 </div>
             );
         };
-
         const App = () => {
             return (
                 <div className="min-h-screen bg-gray-50 p-6 sm:p-10">
                     <header className="mb-8">
                         <h1 className="text-4xl font-extrabold text-gray-800 border-b-4 border-sky-500 pb-2 inline-block">
-                            Bandeja de Tareas
+                            Personajes (Rick & Morty) - Top 20 👽
                         </h1>
                         <p className="mt-2 text-gray-500">
-                            Tabla simplificada de Datos React Html.
+                            Lista de los primeros 20 personajes de la API de Rick and Morty.
                         </p>
                     </header>
 
